@@ -12,8 +12,9 @@ main:
   parallel: False
   gpus_to_use: 1,2
   trains: False
+  image_shape: 64
   paths:
-    train: 'data/train.pkl'
+    train: 'data/CelebA'
     validation: 'data/validation.pkl'
     logs: 'logs/'
 train:
@@ -22,9 +23,9 @@ train:
   dropout: 0.2
   num_hid: 20
   batch_size: 16
+  in_channel: 3
+  z_shape: 128
   save_model: False
   lr:
-    lr_value: 1e-3
-    lr_decay: 15
-    lr_gamma: 0.1
-    lr_step_size: 30
+    lr_gen_value: 0.001
+    lr_des_value: 0.000008

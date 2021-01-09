@@ -10,6 +10,7 @@ CFG_SCHEMA = {
         'parallel': bool,
         'gpus_to_use': str,
         'trains': bool,
+        'image_shape': int,
         'paths': {
             'train': str,
             'validation': str,
@@ -22,12 +23,13 @@ CFG_SCHEMA = {
         'dropout': float,
         'num_hid': int,
         'batch_size': int,
+        'in_channel': int,
+        'z_shape': int,
         'save_model': bool,
         'lr': {
-            'lr_value': float,
-            'lr_decay': int,
-            'lr_gamma': float,
-            'lr_step_size': int,
+            'lr_gen_value': float,
+            'lr_des_value': float,
+
         },
     },
 }

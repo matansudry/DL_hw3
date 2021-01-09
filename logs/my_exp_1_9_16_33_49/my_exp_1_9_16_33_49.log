@@ -1,0 +1,25 @@
+[2021-01-09 16:33:49,786] [TRAIN] - main:
+  experiment_name_prefix: my_exp
+  seed: 1
+  num_workers: 6
+  parallel: false
+  gpus_to_use: 1,2
+  trains: false
+  image_shape: 64
+  paths:
+    train: data/CelebA
+    validation: data/validation.pkl
+    logs: logs/
+train:
+  num_epochs: 15
+  grad_clip: 0.25
+  dropout: 0.2
+  num_hid: 20
+  batch_size: 16
+  in_channel: 3
+  z_shape: 128
+  save_model: false
+  lr:
+    lr_gen_value: 0.001
+    lr_des_value: 8.0e-06
+
