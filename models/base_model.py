@@ -134,7 +134,7 @@ class Generator(nn.Module):
         self.cnn = nn.Sequential(*modules)
         # ========================
 
-    def sample(self, n, with_grad=False):
+    def sample(self, n, features, with_grad=False):
         """
         Samples from the Generator.
         :param n: Number of instance-space samples to generate.
@@ -148,12 +148,15 @@ class Generator(nn.Module):
         #  Generate n latent space samples and return their reconstructions.
         #  Don't use a loop.
         # ====== YOUR CODE: ======
+        continuous = self.z_dim - features.shape[1]
         if with_grad:
-            z = torch.randn((n, self.z_dim), device=device, requires_grad=with_grad)
+            continuous_part = torch.randn((n, continuous), device=device, requires_grad=with_grad)
+            z = torch.cat((continuous_part, features), 1)
             samples = self.forward(z)
         else:
             with torch.no_grad():
-                z = torch.randn((n, self.z_dim), device=device, requires_grad=with_grad)
+                continuous_part = torch.randn((n, continuous), device=device, requires_grad=with_grad)
+                z = torch.cat((continuous_part, features), 1)
                 samples = self.forward(z)
         # ========================
         return samples

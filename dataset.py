@@ -42,14 +42,54 @@ class MyDataset(data.Dataset):
         if not os.path.isfile("data/cache/"+dataset_type+".h5"):
             image_preprocessing_master()
 
+        self.images_features = self.loading_images_features()
+
     def __getitem__(self, item):
+        if(item == 0):
+            print("item 0 = ", item)
         images = h5py.File("data/cache/"+self.dataset_type+".h5", 'r')
         image = images['images'][item].astype('float32')
         image = torch.from_numpy(image)
-        return image
+        features = self.images_features[item]
+        return (image, features) 
 
     def __len__(self) -> int:
         """
         :return: the length of the dataset (number of sample).
         """
         return self.num_of_pics
+
+    def loading_images_features(self):
+        features = []
+        images_features_dict={}
+        ok=0
+        with open('data/list_attr_celeba.txt', "r") as file:
+            for row_index, row in tqdm.tqdm(enumerate(file)):
+                # split allows you to break a string apart with a string key
+                temp_features=[]
+                for col_index, value in enumerate(row.split(" ")):
+                    if (row_index == 0):
+                        number_of_images = int(value)
+                        continue
+                    if (row_index == 1):
+                        features.append(value)
+                        continue
+                    if (value==''):
+                        continue
+                    if '/n' in value:
+                        value.replace('/n', '')
+                    ok=1
+                    if (col_index==0):
+                        id = int(value.split(".")[0])
+                        continue
+                    if (value == '-1'):
+                        temp_features.append(-1)
+                    else:
+                        temp_features.append(int(value))
+                if (row_index>1):
+                    images_features_dict[id] = temp_features.copy()
+        number_of_features = len(images_features_dict[1])
+        images_features_tensor = torch.zeros((number_of_images,number_of_features))
+        for i, features in enumerate(images_features_dict):
+            images_features_tensor[i] = torch.FloatTensor(images_features_dict[features])
+        return(images_features_tensor)

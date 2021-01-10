@@ -51,7 +51,7 @@ def main(cfg: DictConfig) -> None:
     main_utils.set_seed(cfg['main']['seed'])
 
     #train_dataset = torchvision.datasets.ImageFolder(cfg['main']['paths']['train'], train_transformation)
-    train_dataset = MyDataset( image_path=cfg['main']['paths']['train'], train=True)
+    train_dataset = MyDataset(image_path=cfg['main']['paths']['train'], train=True)
 
     # Use sampler for randomization
     #training_sampler = torch.utils.data.SubsetRandomSampler(range(len(train_dataset)))

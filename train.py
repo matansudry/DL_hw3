@@ -15,6 +15,8 @@ from utils.train_logger import TrainLogger
 import torch.optim as optim
 import IPython.display
 import numpy as np
+import utils.plot as plot
+import matplotlib.pyplot as plt
 
 
 
@@ -44,9 +46,12 @@ def train(dis_model: nn.Module, gen_model: nn.Module, train_loader: DataLoader, 
         #with tqdm.tqdm(total=len(train_loader.batch_sampler), file=sys.stdout) as pbar:
         #for idx, (x_data, _) in tqdm(enumerate(train_loader)):
         for x_data in tqdm(train_loader):
+            image = x_data[0]
+            features = x_data[1]
             if torch.cuda.is_available():
-                x_data = x_data.to("cuda")
-            dsc_loss, gen_loss = train_batch(dis_model, gen_model, discriminator_loss_fn, generator_loss_fn, dsc_optimizer, gen_optimizer, x_data)
+                image = image.to("cuda")
+                features = features.to("cuda")
+            dsc_loss, gen_loss = train_batch(dis_model, gen_model, discriminator_loss_fn, generator_loss_fn, dsc_optimizer, gen_optimizer, image, features)
             dsc_losses.append(dsc_loss)
             gen_losses.append(gen_loss)
 
@@ -132,7 +137,9 @@ def train_batch(
     gen_loss_fn,
     dsc_optimizer,
     gen_optimizer,
-    x_data,
+    #x_data,
+    image,
+    features,
 ):
     """
     Trains a GAN for over one batch, updating both the discriminator and
@@ -143,10 +150,10 @@ def train_batch(
     dsc_optimizer.zero_grad()
     
     #real images
-    y_data = dsc_model.forward(x_data)
+    y_data = dsc_model.forward(image)
     
     #generate data w/o grad
-    generated_data = gen_model.sample(x_data.shape[0], with_grad=False)
+    generated_data = gen_model.sample(image.shape[0], features, with_grad=False)
 
     #fake images w/o grad
     y_generated = dsc_model.forward(generated_data.detach())
@@ -162,7 +169,7 @@ def train_batch(
     gen_optimizer.zero_grad()
     
     #generate data w/ grad
-    generated_data_2 = gen_model.sample(x_data.shape[0], with_grad=True)
+    generated_data_2 = gen_model.sample(image.shape[0], features, with_grad=True)
 
     #fake images w/ grad
     y_generated_2 = dsc_model(generated_data_2)
@@ -187,168 +194,12 @@ def save_checkpoint(gen_model, dsc_losses, gen_losses, checkpoint_file):
 
     saved = False
     checkpoint_file = f"{checkpoint_file}.pt"
-
-    if len(gen_losses) < 11:
-        return saved
     new_arr = []
-    for i in range(len(gen_losses) - 10):
-        new_arr.append(1/(abs(dsc_losses[i+10] - gen_losses[i+10])*(dsc_losses[i+10] + gen_losses[i+10])))
+    for i in range(len(gen_losses)):
+        new_arr.append(1/(abs(dsc_losses[i] - gen_losses[i])*(dsc_losses[i] + gen_losses[i])))
     tmp = max(new_arr)
     predicted_index = new_arr.index(tmp)
     if (predicted_index == len(gen_losses)-11):
         torch.save(gen_model, checkpoint_file)
         saved = True
     return saved
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-    """
-    Training procedure. Change each part if needed (optimizer, loss, etc.)
-    :param model:
-    :param train_loader:
-    :param eval_loader:
-    :param train_params:
-    :param logger:
-    :return:
-    """
-    """metrics = train_utils.get_zeroed_metrics_dict()
-    best_eval_score = 0
-
-    # Create optimizer
-    optimizer = torch.optim.Adam(model.parameters(), lr=train_params.lr)
-
-    # Create learning rate scheduler
-    scheduler = torch.optim.lr_scheduler.StepLR(optimizer,
-                                                step_size=train_params.lr_step_size,
-                                                gamma=train_params.lr_gamma)
-
-    for epoch in tqdm(range(train_params.num_epochs)):
-        t = time.time()
-        metrics = train_utils.get_zeroed_metrics_dict()
-
-        for i, (x, y) in enumerate(train_loader):
-            if torch.cuda.is_available():
-                x = x.cuda()
-                y = y.cuda()
-
-            y_hat = model(x)
-
-            loss = nn.functional.binary_cross_entropy_with_logits(y_hat, y)
-
-            # Optimization step
-            optimizer.zero_grad()
-            loss.backward()
-            optimizer.step()
-
-            # Calculate metrics
-            metrics['total_norm'] += nn.utils.clip_grad_norm_(model.parameters(), train_params.grad_clip)
-            metrics['count_norm'] += 1
-
-            # NOTE! This function compute scores correctly only for one hot encoding representation of the logits
-            batch_score = train_utils.compute_score_with_logits(y_hat, y.data).sum()
-            metrics['train_score'] += batch_score.item()
-
-            metrics['train_loss'] += loss.item() * x.size(0)
-
-            # Report model to tensorboard
-            if epoch == 0 and i == 0:
-                logger.report_graph(model, x)
-
-        # Learning rate scheduler step
-        scheduler.step()
-
-        # Calculate metrics
-        metrics['train_loss'] /= len(train_loader.dataset)
-
-        metrics['train_score'] /= len(train_loader.dataset)
-        metrics['train_score'] *= 100
-
-        norm = metrics['total_norm'] / metrics['count_norm']
-
-        model.train(False)
-        metrics['eval_score'], metrics['eval_loss'] = evaluate(model, eval_loader)
-        model.train(True)
-
-        epoch_time = time.time() - t
-        logger.write_epoch_statistics(epoch, epoch_time, metrics['train_loss'], norm,
-                                      metrics['train_score'], metrics['eval_score'])
-
-        scalars = {'Accuracy/Train': metrics['train_score'],
-                   'Accuracy/Validation': metrics['train_loss'],
-                   'Loss/Train': metrics['eval_score'],
-                   'Loss/Validation': metrics['eval_loss']}
-
-        logger.report_scalars(scalars, epoch)
-
-        if metrics['eval_score'] > best_eval_score:
-            best_eval_score = metrics['eval_score']
-            if train_params.save_model:
-                logger.save_model(model, epoch, optimizer)
-
-    return get_metrics(best_eval_score, metrics['eval_score'], metrics['train_loss'])
-
-
-@torch.no_grad()
-def evaluate(model: nn.Module, dataloader: DataLoader) -> Scores:
-    
-    Evaluate a model without gradient calculation
-    :param model: instance of a model
-    :param dataloader: dataloader to evaluate the model on
-    :return: tuple of (accuracy, loss) values
-    
-    score = 0
-    loss = 0
-
-    for i, (x, y) in tqdm(enumerate(dataloader)):
-        if torch.cuda.is_available():
-            x = x.cuda()
-            y = y.cuda()
-
-        y_hat = model(x)
-
-        loss += nn.functional.binary_cross_entropy_with_logits(y_hat, y)
-        score += train_utils.compute_score_with_logits(y_hat, y).sum().item()
-
-    loss /= len(dataloader.dataset)
-    score /= len(dataloader.dataset)
-    score *= 100
-
-    return score, loss"""
-
-    """# maybe we should delete the below
-    dsc_optimizer = create_optimizer(dsc.parameters(), hp['discriminator_optimizer'])
-    gen_optimizer = create_optimizer(gen.parameters(), hp['generator_optimizer'])
-    checkpoint_file = 'checkpoints/gan'
-    checkpoint_file_final = f'{checkpoint_file}_final'
-    if os.path.isfile(f'{checkpoint_file}.pt'):
-        os.remove(f'{checkpoint_file}.pt')"""#
-
-
-
-
-"""num_epochs = 100
-
-if os.path.isfile(f'{checkpoint_file_final}.pt'):
-    print(f'*** Loading final checkpoint file {checkpoint_file_final} instead of training')
-    num_epochs = 0
-    gen = torch.load(f'{checkpoint_file_final}.pt', map_location=device)
-    checkpoint_file = checkpoint_file_final
-
-dis_model: nn.Module, gen_model: nn.Module
-
-
-try:"""
