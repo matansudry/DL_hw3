@@ -3,65 +3,53 @@ Here, we create a custom dataset
 """
 import torch
 import pickle
-
+import argparse
+import os
+import sys
+import json
+import numpy as np
+import re
+import pickle
+import utils
+import tqdm
 from utils.types import PathT
-from torch.utils.data import Dataset
+import torch.utils.data as data
+from torch.utils.data import DataLoader
 from typing import Any, Tuple, Dict, List
+import torchvision.transforms as transforms
+from PIL import Image
+import h5py
+from utils.image_preprocessing import image_preprocessing_master
 
-
-class MyDataset(Dataset):
+class MyDataset(data.Dataset):
     """
     Custom dataset template. Implement the empty functions.
     """
-    def __init__(self, path: PathT) -> None:
+    def __init__(self, image_path, train=True):
         # Set variables
-        self.path = path
+        self.image_features_path = image_path
 
-        # Load features
-        self.features = self._get_features()
+        #define train or val
+        if (train):
+            dataset_type = "train"
+        else:
+            dataset_type = "val"
 
-        # Create list of entries
-        self.entries = self._get_entries()
+        self.dataset_type = dataset_type
 
-    def __getitem__(self, index: int) -> Tuple:
-        return self.entries[index]['x'], self.entries[index]['y']
+        self.num_of_pics = len(os.listdir(self.image_features_path))
+
+        if not os.path.isfile("data/cache/"+dataset_type+".h5"):
+            image_preprocessing_master()
+
+    def __getitem__(self, item):
+        images = h5py.File("data/cache/"+self.dataset_type+".h5", 'r')
+        image = images['images'][item].astype('float32')
+        image = torch.from_numpy(image)
+        return image
 
     def __len__(self) -> int:
         """
         :return: the length of the dataset (number of sample).
         """
-        return len(self.entries)
-
-    def _get_features(self) -> Any:
-        """
-        Load all features into a structure (not necessarily dictionary). Think if you need/can load all the features
-        into the memory.
-        :return:
-        :rtype:
-        """
-        with open(self.path, "rb") as features_file:
-            features = pickle.load(features_file)
-
-        return features
-
-    def _get_entries(self) -> List:
-        """
-        This function create a list of all the entries. We will use it later in __getitem__
-        :return: list of samples
-        """
-        entries = []
-
-        for idx, item in self.features.items():
-            entries.append(self._get_entry(item))
-
-        return entries
-
-    @staticmethod
-    def _get_entry(item: Dict) -> Dict:
-        """
-        :item: item from the data. In this example, {'input': Tensor, 'y': int}
-        """
-        x = item['input']
-        y = torch.Tensor([1, 0]) if item['label'] else torch.Tensor([0, 1])
-
-        return {'x': x, 'y': y}
+        return self.num_of_pics

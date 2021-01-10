@@ -31,6 +31,7 @@ import matplotlib.pyplot as plt
 import matplotlib.animation as animation
 from IPython.display import HTML
 import torchvision
+from dataset import MyDataset
 
 
 torch.backends.cudnn.benchmark = True
@@ -49,18 +50,14 @@ def main(cfg: DictConfig) -> None:
     # Set seed for results reproduction
     main_utils.set_seed(cfg['main']['seed'])
 
-    train_transformation = transforms.Compose([
-        transforms.Resize((cfg['main']['image_shape'], cfg['main']['image_shape'])),
-        transforms.ToTensor(),
-        transforms.Normalize((0.5, 0.5, 0.5), (0.5, 0.5, 0.5)),
-    ])
-    train_dataset = torchvision.datasets.ImageFolder(cfg['main']['paths']['train'], train_transformation)
+    #train_dataset = torchvision.datasets.ImageFolder(cfg['main']['paths']['train'], train_transformation)
+    train_dataset = MyDataset( image_path=cfg['main']['paths']['train'], train=True)
 
     # Use sampler for randomization
-    training_sampler = torch.utils.data.SubsetRandomSampler(range(len(train_dataset)))
+    #training_sampler = torch.utils.data.SubsetRandomSampler(range(len(train_dataset)))
 
     # Prepare Data Loaders for training and validation
-    train_loader = torch.utils.data.DataLoader(train_dataset, batch_size=cfg['train']['batch_size'], sampler=training_sampler,
+    train_loader = torch.utils.data.DataLoader(train_dataset, batch_size=cfg['train']['batch_size'], shuffle=True,
                                                pin_memory=True, num_workers=cfg['main']['num_workers'])
 
 
@@ -70,7 +67,6 @@ def main(cfg: DictConfig) -> None:
     gen_model = Generator(z_dim=cfg['train']['z_shape'])
 
 
-    # TODO: Add gpus_to_use
     if cfg['main']['parallel']:
         dis_model = torch.nn.DataParallel(dis_model)
         gen_model = torch.nn.DataParallel(gen_model)

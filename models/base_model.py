@@ -3,7 +3,6 @@
 """
 
 from abc import ABCMeta
-from nets.fc import FCNet
 from torch import nn, Tensor
 import torch
 import torch.nn as nn

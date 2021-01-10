@@ -14,7 +14,7 @@ main:
   trains: False
   image_shape: 64
   paths:
-    train: 'data/CelebA'
+    train: 'data/CelebA/img_align_celeba'
     validation: 'data/validation.pkl'
     logs: 'logs/'
 train:
@@ -22,7 +22,7 @@ train:
   grad_clip: 0.25
   dropout: 0.2
   num_hid: 20
-  batch_size: 16
+  batch_size: 512
   in_channel: 3
   z_shape: 128
   save_model: False

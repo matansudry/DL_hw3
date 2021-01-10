@@ -14,6 +14,7 @@ from utils.train_utils import TrainParams
 from utils.train_logger import TrainLogger
 import torch.optim as optim
 import IPython.display
+import numpy as np
 
 
 
@@ -42,7 +43,7 @@ def train(dis_model: nn.Module, gen_model: nn.Module, train_loader: DataLoader, 
 
         #with tqdm.tqdm(total=len(train_loader.batch_sampler), file=sys.stdout) as pbar:
         #for idx, (x_data, _) in tqdm(enumerate(train_loader)):
-        for (x_data, _) in tqdm(train_loader):
+        for x_data in tqdm(train_loader):
             if torch.cuda.is_available():
                 x_data = x_data.to("cuda")
             dsc_loss, gen_loss = train_batch(dis_model, gen_model, discriminator_loss_fn, generator_loss_fn, dsc_optimizer, gen_optimizer, x_data)
@@ -54,7 +55,7 @@ def train(dis_model: nn.Module, gen_model: nn.Module, train_loader: DataLoader, 
         print(f'Discriminator loss: {dsc_avg_losses[-1]}')
         print(f'Generator loss:     {gen_avg_losses[-1]}')
         
-        if save_checkpoint(gen_model, dsc_avg_losses, gen_avg_losses, checkpoint_file):
+        if save_checkpoint(gen_model, dsc_avg_losses, gen_avg_losses, 'checkpoint'):
             print(f'Saved checkpoint.')
             
 
