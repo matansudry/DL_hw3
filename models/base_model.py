@@ -1,7 +1,3 @@
-"""
-    Example for a simple model
-"""
-
 from abc import ABCMeta
 from torch import nn, Tensor
 import torch
@@ -17,14 +13,9 @@ class Discriminator(nn.Module):
         """
         :param in_size: The size of on input image (without batch dimension).
         """
+
         super().__init__()
         self.in_size = in_size
-        # TODO: Create the discriminator model layers.
-        #  To extract image features you can use the EncoderCNN from the VAE
-        #  section or implement something new.
-        #  You can then use either an affine layer or another conv layer to
-        #  flatten the features.
-        # ====== YOUR CODE: ======
         modules = []
 
         in_channels = self.in_size[0]
@@ -60,19 +51,13 @@ class Discriminator(nn.Module):
         self.dropout = nn.Dropout()
         self.linaer2 = nn.Linear(256, 1)
 
-
-        # ========================
-
     def forward(self, x):
         """
         :param x: Input of shape (N,C,H,W) matching the given in_size.
         :return: Discriminator class score (not probability) of
         shape (N,).
         """
-        # TODO: Implement discriminator forward pass.
-        #  No need to apply sigmoid to obtain probability - we'll combine it
-        #  with the loss due to improved numerical stability.
-        # ====== YOUR CODE: ======
+
         x = self.cnn(x)
         batch_size = x.shape[0]
         x = x.view(batch_size, -1)
@@ -80,7 +65,6 @@ class Discriminator(nn.Module):
         x = self.relu(x)
         x = self.dropout(x)
         y = self.linaer2(x)
-        # ========================
         return y
 
 
@@ -92,14 +76,10 @@ class Generator(nn.Module):
         (determines output size). For example set to 4 for a 4x4 feature map.
         :out_channels: Number of channels in the generated image.
         """
+
         super().__init__()
         self.z_dim = z_dim
 
-        # TODO: Create the generator model layers.
-        #  To combine image features you can use the DecoderCNN from the VAE
-        #  section or implement something new.
-        #  You can assume a fixed image size.
-        # ====== YOUR CODE: ======
         modules = []
 
         self.in_channels = z_dim
@@ -130,9 +110,7 @@ class Generator(nn.Module):
         modules.append(nn.ConvTranspose2d(128, 3, kernel_size=4, stride=2, padding=1))
         # 3 x 64 x 64
 
-        # ========================
         self.cnn = nn.Sequential(*modules)
-        # ========================
 
     def sample(self, n, features, with_grad=False):
         """
@@ -143,11 +121,8 @@ class Generator(nn.Module):
         be able to backprop into them and compute their gradients).
         :return: A batch of samples, shape (N,C,H,W).
         """
+
         device = next(self.parameters()).device
-        # TODO: Sample from the model.
-        #  Generate n latent space samples and return their reconstructions.
-        #  Don't use a loop.
-        # ====== YOUR CODE: ======
         continuous = self.z_dim - features.shape[1]
         if with_grad:
             continuous_part = torch.randn((n, continuous), device=device, requires_grad=with_grad)
@@ -158,7 +133,6 @@ class Generator(nn.Module):
                 continuous_part = torch.randn((n, continuous), device=device, requires_grad=with_grad)
                 z = torch.cat((continuous_part, features), 1)
                 samples = self.forward(z)
-        # ========================
         return samples
 
     def forward(self, z):
@@ -167,10 +141,6 @@ class Generator(nn.Module):
         :return: A batch of generated images of shape (N,C,H,W) which should be
         the shape which the Discriminator accepts.
         """
-        # TODO: Implement the Generator forward pass.
-        #  Don't forget to make sure the output instances have the same
-        #  dynamic range as the original (real) images.
-        # ====== YOUR CODE: ======
+
         x = torch.tanh(self.cnn(z.view(z.shape[0], -1, 1, 1)))
-        # ========================
         return x

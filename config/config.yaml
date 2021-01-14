@@ -18,7 +18,7 @@ main:
     validation: 'data/validation.pkl'
     logs: 'logs/'
 train:
-  num_epochs: 15
+  num_epochs: 150
   grad_clip: 0.25
   dropout: 0.2
   num_hid: 20
@@ -27,5 +27,5 @@ train:
   z_shape: 128
   save_model: False
   lr:
-    lr_gen_value: 0.001
+    lr_gen_value: 0.0001
     lr_des_value: 0.000008

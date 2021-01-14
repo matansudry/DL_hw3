@@ -45,8 +45,6 @@ class MyDataset(data.Dataset):
         self.images_features = self.loading_images_features()
 
     def __getitem__(self, item):
-        if(item == 0):
-            print("item 0 = ", item)
         images = h5py.File("data/cache/"+self.dataset_type+".h5", 'r')
         image = images['images'][item].astype('float32')
         image = torch.from_numpy(image)

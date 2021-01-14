@@ -1,0 +1,484 @@
+[2021-01-13 17:34:07,930] [TRAIN] - main:
+  experiment_name_prefix: my_exp
+  seed: 1
+  num_workers: 6
+  parallel: false
+  gpus_to_use: 1,2
+  trains: false
+  image_shape: 64
+  paths:
+    train: data/CelebA/img_align_celeba
+    validation: data/validation.pkl
+    logs: logs/
+train:
+  num_epochs: 150
+  grad_clip: 0.25
+  dropout: 0.2
+  num_hid: 20
+  batch_size: 512
+  in_channel: 3
+  z_shape: 128
+  save_model: false
+  lr:
+    lr_gen_value: 0.0001
+    lr_des_value: 8.0e-06
+
+0it [00:00, ?it/s]4558it [00:00, 45576.57it/s]11866it [00:00, 51376.30it/s]19186it [00:00, 56422.82it/s]26588it [00:00, 60755.49it/s]33793it [00:00, 63752.69it/s]41134it [00:00, 66371.80it/s]48392it [00:00, 68119.69it/s]55765it [00:00, 69710.21it/s]63094it [00:00, 70745.88it/s]70343it [00:01, 71258.95it/s]77537it [00:01, 71460.51it/s]84854it [00:01, 71964.07it/s]92019it [00:01, 71525.00it/s]99151it [00:01, 59070.39it/s]106461it [00:01, 62676.60it/s]113817it [00:01, 65585.90it/s]121143it [00:01, 67711.62it/s]128194it [00:01, 68526.26it/s]135571it [00:01, 70017.05it/s]142879it [00:02, 70907.27it/s]150068it [00:02, 71198.07it/s]157302it [00:02, 71534.44it/s]164493it [00:02, 71380.42it/s]171829it [00:02, 71961.99it/s]179045it [00:02, 71434.85it/s]186555it [00:02, 72496.19it/s]193819it [00:02, 55774.56it/s]201063it [00:02, 59909.06it/s]202601it [00:02, 67584.68it/s]
+[2021-01-13 17:34:15,945] [TRAIN] - Discriminator(
+  (cnn): Sequential(
+    (0): Conv2d(3, 128, kernel_size=(4, 4), stride=(2, 2), padding=(1, 1))
+    (1): BatchNorm2d(128, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+    (2): ReLU()
+    (3): Dropout(p=0.2, inplace=False)
+    (4): Conv2d(128, 256, kernel_size=(4, 4), stride=(2, 2), padding=(1, 1))
+    (5): BatchNorm2d(256, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+    (6): ReLU()
+    (7): Dropout(p=0.2, inplace=False)
+    (8): Conv2d(256, 512, kernel_size=(4, 4), stride=(2, 2), padding=(1, 1))
+    (9): BatchNorm2d(512, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+    (10): ReLU()
+    (11): Dropout(p=0.2, inplace=False)
+    (12): Conv2d(512, 1024, kernel_size=(4, 4), stride=(2, 2), padding=(1, 1))
+    (13): MaxPool2d(kernel_size=4, stride=4, padding=0, dilation=1, ceil_mode=False)
+  )
+  (linaer1): Linear(in_features=1024, out_features=256, bias=True)
+  (relu): ReLU()
+  (dropout): Dropout(p=0.5, inplace=False)
+  (linaer2): Linear(in_features=256, out_features=1, bias=True)
+)
+Params: 11282561
+[2021-01-13 17:34:15,945] [TRAIN] - Generator(
+  (cnn): Sequential(
+    (0): ConvTranspose2d(128, 1024, kernel_size=(4, 4), stride=(1, 1))
+    (1): BatchNorm2d(1024, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+    (2): ReLU()
+    (3): ConvTranspose2d(1024, 512, kernel_size=(2, 2), stride=(2, 2))
+    (4): BatchNorm2d(512, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+    (5): ReLU()
+    (6): ConvTranspose2d(512, 256, kernel_size=(2, 2), stride=(2, 2))
+    (7): BatchNorm2d(256, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+    (8): ReLU()
+    (9): ConvTranspose2d(256, 128, kernel_size=(2, 2), stride=(2, 2))
+    (10): BatchNorm2d(128, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+    (11): ReLU()
+    (12): ConvTranspose2d(128, 3, kernel_size=(4, 4), stride=(2, 2), padding=(1, 1))
+  )
+)
+Params: 4861571
+--- EPOCH 1/150 ---
+Discriminator loss: 1.0377693188310875
+Generator loss:     1.103181165878219
+Saved checkpoint.
+--- EPOCH 2/150 ---
+Discriminator loss: 0.9405622122564701
+Generator loss:     1.3360546240300843
+Saved checkpoint.
+--- EPOCH 3/150 ---
+Discriminator loss: 0.8869046344600543
+Generator loss:     1.4829394877559008
+Saved checkpoint.
+--- EPOCH 4/150 ---
+Discriminator loss: 0.7647005149511376
+Generator loss:     1.7529999993064187
+Saved checkpoint.
+--- EPOCH 5/150 ---
+Discriminator loss: 0.628028080845722
+Generator loss:     2.1097654128315475
+Saved checkpoint.
+--- EPOCH 6/150 ---
+Discriminator loss: 0.5710144707500332
+Generator loss:     2.3021435797816574
+Saved checkpoint.
+--- EPOCH 7/150 ---
+Discriminator loss: 0.6056988141452423
+Generator loss:     2.248063379164898
+Saved checkpoint.
+--- EPOCH 8/150 ---
+Discriminator loss: 0.46718715357057977
+Generator loss:     2.589208224506089
+Saved checkpoint.
+--- EPOCH 9/150 ---
+Discriminator loss: 0.4744615937874775
+Generator loss:     2.655812493478409
+Saved checkpoint.
+--- EPOCH 10/150 ---
+Discriminator loss: 0.4596691474017471
+Generator loss:     2.717144712053164
+Saved checkpoint.
+--- EPOCH 11/150 ---
+Discriminator loss: 0.4125547856468745
+Generator loss:     2.863640299951187
+Saved checkpoint.
+--- EPOCH 12/150 ---
+Discriminator loss: 0.35383682729996213
+Generator loss:     3.236548246759357
+Saved checkpoint.
+--- EPOCH 13/150 ---
+Discriminator loss: 0.2916767672080584
+Generator loss:     3.6155308123790855
+Saved checkpoint.
+--- EPOCH 14/150 ---
+Discriminator loss: 0.26793860437141526
+Generator loss:     3.875726744382068
+Saved checkpoint.
+--- EPOCH 15/150 ---
+Discriminator loss: 0.26872045689761037
+Generator loss:     3.807719755654383
+Saved checkpoint.
+--- EPOCH 16/150 ---
+Discriminator loss: 0.24239786633412647
+Generator loss:     4.023560522180615
+Saved checkpoint.
+--- EPOCH 17/150 ---
+Discriminator loss: 0.23803983657912473
+Generator loss:     4.1741307492208
+Saved checkpoint.
+--- EPOCH 18/150 ---
+Discriminator loss: 0.2461470209080914
+Generator loss:     4.233006072164786
+Saved checkpoint.
+--- EPOCH 19/150 ---
+Discriminator loss: 0.17021555023154977
+Generator loss:     4.697662160252079
+Saved checkpoint.
+--- EPOCH 20/150 ---
+Discriminator loss: 0.1718191538438803
+Generator loss:     4.736224610396106
+Saved checkpoint.
+--- EPOCH 21/150 ---
+Discriminator loss: 0.200108804722373
+Generator loss:     4.663583527911793
+Saved checkpoint.
+--- EPOCH 22/150 ---
+Discriminator loss: 0.2401230823850692
+Generator loss:     4.334754592240459
+Saved checkpoint.
+--- EPOCH 23/150 ---
+Discriminator loss: 0.2181784367997839
+Generator loss:     4.463912720632071
+Saved checkpoint.
+--- EPOCH 24/150 ---
+Discriminator loss: 0.214017817336652
+Generator loss:     4.754922125074598
+Saved checkpoint.
+--- EPOCH 25/150 ---
+Discriminator loss: 0.19432643189499474
+Generator loss:     4.880774313753301
+Saved checkpoint.
+--- EPOCH 26/150 ---
+Discriminator loss: 0.16640714612422566
+Generator loss:     4.970534975480551
+Saved checkpoint.
+--- EPOCH 27/150 ---
+Discriminator loss: 0.14427563515632894
+Generator loss:     5.351774303600042
+Saved checkpoint.
+--- EPOCH 28/150 ---
+Discriminator loss: 0.15446740178617113
+Generator loss:     5.192063753050987
+Saved checkpoint.
+--- EPOCH 29/150 ---
+Discriminator loss: 0.16869987016825966
+Generator loss:     5.118290246135056
+Saved checkpoint.
+--- EPOCH 30/150 ---
+Discriminator loss: 0.1470247363892732
+Generator loss:     5.3647506778890435
+Saved checkpoint.
+--- EPOCH 31/150 ---
+Discriminator loss: 0.18091923763241732
+Generator loss:     4.997337727835684
+Saved checkpoint.
+--- EPOCH 32/150 ---
+Discriminator loss: 0.18704702022174993
+Generator loss:     4.921210618934246
+Saved checkpoint.
+--- EPOCH 33/150 ---
+Discriminator loss: 0.20081355624992137
+Generator loss:     4.825405249691973
+Saved checkpoint.
+--- EPOCH 34/150 ---
+Discriminator loss: 0.22820088805423844
+Generator loss:     4.714325288329461
+Saved checkpoint.
+--- EPOCH 35/150 ---
+Discriminator loss: 0.21910922568423127
+Generator loss:     4.671533818798836
+Saved checkpoint.
+--- EPOCH 36/150 ---
+Discriminator loss: 0.18878219701170998
+Generator loss:     4.967419240209791
+Saved checkpoint.
+--- EPOCH 37/150 ---
+Discriminator loss: 0.17690451984585384
+Generator loss:     5.1610912680625916
+Saved checkpoint.
+--- EPOCH 38/150 ---
+Discriminator loss: 0.19770025147708378
+Generator loss:     4.987141155835354
+Saved checkpoint.
+--- EPOCH 39/150 ---
+Discriminator loss: 0.20039168973876673
+Generator loss:     4.950268264972802
+Saved checkpoint.
+--- EPOCH 40/150 ---
+Discriminator loss: 0.18805439245294442
+Generator loss:     5.170797431709791
+Saved checkpoint.
+--- EPOCH 41/150 ---
+Discriminator loss: 0.20377195045126206
+Generator loss:     4.938015967908532
+Saved checkpoint.
+--- EPOCH 42/150 ---
+Discriminator loss: 0.21919042517365228
+Generator loss:     4.890391348588346
+Saved checkpoint.
+--- EPOCH 43/150 ---
+Discriminator loss: 0.19372982216641457
+Generator loss:     4.976172250328642
+Saved checkpoint.
+--- EPOCH 44/150 ---
+Discriminator loss: 0.18852062361559482
+Generator loss:     5.105299075444539
+Saved checkpoint.
+--- EPOCH 45/150 ---
+Discriminator loss: 0.20547292663744002
+Generator loss:     4.934800467105827
+Saved checkpoint.
+--- EPOCH 46/150 ---
+Discriminator loss: 0.22529485411565714
+Generator loss:     4.771785758962535
+Saved checkpoint.
+--- EPOCH 47/150 ---
+Discriminator loss: 0.22772620441486138
+Generator loss:     4.688770358008568
+Saved checkpoint.
+--- EPOCH 48/150 ---
+Discriminator loss: 0.2381344920852118
+Generator loss:     4.749266022383565
+Saved checkpoint.
+--- EPOCH 49/150 ---
+Discriminator loss: 0.24925268059502345
+Generator loss:     4.663584076997005
+Saved checkpoint.
+--- EPOCH 50/150 ---
+Discriminator loss: 0.22823938783822637
+Generator loss:     4.746836033734408
+Saved checkpoint.
+--- EPOCH 51/150 ---
+Discriminator loss: 0.2369960250351766
+Generator loss:     4.78493603492024
+Saved checkpoint.
+--- EPOCH 52/150 ---
+Discriminator loss: 0.266714148975984
+Generator loss:     4.449517877414973
+Saved checkpoint.
+--- EPOCH 53/150 ---
+Discriminator loss: 0.2760873708610583
+Generator loss:     4.36159237526884
+Saved checkpoint.
+--- EPOCH 54/150 ---
+Discriminator loss: 0.26264591949681443
+Generator loss:     4.618327517100055
+Saved checkpoint.
+--- EPOCH 55/150 ---
+Discriminator loss: 0.28035918632616297
+Generator loss:     4.428997212588185
+Saved checkpoint.
+--- EPOCH 56/150 ---
+Discriminator loss: 0.2662172754756128
+Generator loss:     4.49822609352343
+Saved checkpoint.
+--- EPOCH 57/150 ---
+Discriminator loss: 0.29093110027036284
+Generator loss:     4.313560468379897
+Saved checkpoint.
+--- EPOCH 58/150 ---
+Discriminator loss: 0.28198100120355984
+Generator loss:     4.508038390164423
+Saved checkpoint.
+--- EPOCH 59/150 ---
+Discriminator loss: 0.29289195814518015
+Generator loss:     4.288730621337891
+Saved checkpoint.
+--- EPOCH 60/150 ---
+Discriminator loss: 0.3190875140329202
+Generator loss:     4.168408422157018
+Saved checkpoint.
+--- EPOCH 61/150 ---
+Discriminator loss: 0.33769749311937225
+Generator loss:     4.026109449189119
+Saved checkpoint.
+--- EPOCH 62/150 ---
+Discriminator loss: 0.3578438593657932
+Generator loss:     3.9218965768814087
+Saved checkpoint.
+--- EPOCH 63/150 ---
+Discriminator loss: 0.3627625486314899
+Generator loss:     3.866787280097152
+Saved checkpoint.
+--- EPOCH 64/150 ---
+Discriminator loss: 0.3166334355118299
+Generator loss:     4.151858876449893
+Saved checkpoint.
+--- EPOCH 65/150 ---
+Discriminator loss: 0.3390290741855749
+Generator loss:     4.0093727448974
+Saved checkpoint.
+--- EPOCH 66/150 ---
+Discriminator loss: 0.36610654993641256
+Generator loss:     3.9430323200996478
+Saved checkpoint.
+--- EPOCH 67/150 ---
+Discriminator loss: 0.364305049952383
+Generator loss:     3.9876732645612774
+Saved checkpoint.
+--- EPOCH 68/150 ---
+Discriminator loss: 0.3583440239155533
+Generator loss:     3.8542455386633825
+Saved checkpoint.
+--- EPOCH 69/150 ---
+Discriminator loss: 0.4091976357228828
+Generator loss:     3.6274685203427017
+Saved checkpoint.
+--- EPOCH 70/150 ---
+Discriminator loss: 0.35735074235032305
+Generator loss:     3.9050353024945115
+Saved checkpoint.
+--- EPOCH 71/150 ---
+Discriminator loss: 0.3587613283383726
+Generator loss:     4.0039937550371345
+Saved checkpoint.
+--- EPOCH 72/150 ---
+Discriminator loss: 0.4232531512777011
+Generator loss:     3.535381029952656
+Saved checkpoint.
+--- EPOCH 73/150 ---
+Discriminator loss: 0.39841077307408507
+Generator loss:     3.637891944610711
+Saved checkpoint.
+--- EPOCH 74/150 ---
+Discriminator loss: 0.44480186181538034
+Generator loss:     3.406487311979737
+Saved checkpoint.
+--- EPOCH 75/150 ---
+Discriminator loss: 0.4278288912592512
+Generator loss:     3.4761368560068533
+Saved checkpoint.
+--- EPOCH 76/150 ---
+Discriminator loss: 0.43859700060854057
+Generator loss:     3.523997902268111
+Saved checkpoint.
+--- EPOCH 77/150 ---
+Discriminator loss: 0.40863942757549915
+Generator loss:     3.6625598831610247
+Saved checkpoint.
+--- EPOCH 78/150 ---
+Discriminator loss: 0.4541608470708433
+Generator loss:     3.339873371702252
+Saved checkpoint.
+--- EPOCH 79/150 ---
+Discriminator loss: 0.45624487124609225
+Generator loss:     3.352628933660912
+Saved checkpoint.
+--- EPOCH 80/150 ---
+Discriminator loss: 0.46092115922106636
+Generator loss:     3.3243694407771334
+Saved checkpoint.
+--- EPOCH 81/150 ---
+Discriminator loss: 0.4590800412827068
+Generator loss:     3.3236522969573437
+Saved checkpoint.
+--- EPOCH 82/150 ---
+Discriminator loss: 0.42873490052391783
+Generator loss:     3.486687736077742
+Saved checkpoint.
+--- EPOCH 83/150 ---
+Discriminator loss: 0.46775233572480657
+Generator loss:     3.2952338107908616
+Saved checkpoint.
+--- EPOCH 84/150 ---
+Discriminator loss: 0.4696845192499835
+Generator loss:     3.285920261132597
+Saved checkpoint.
+--- EPOCH 85/150 ---
+Discriminator loss: 0.46904147860377726
+Generator loss:     3.352792507470256
+Saved checkpoint.
+--- EPOCH 86/150 ---
+Discriminator loss: 0.49075157402290237
+Generator loss:     3.185618123622856
+Saved checkpoint.
+--- EPOCH 87/150 ---
+Discriminator loss: 0.49496999345343523
+Generator loss:     3.113451052795757
+Saved checkpoint.
+--- EPOCH 88/150 ---
+Discriminator loss: 0.494442889034146
+Generator loss:     3.1020508799890076
+Saved checkpoint.
+--- EPOCH 89/150 ---
+Discriminator loss: 0.4627940497464604
+Generator loss:     3.411299524283168
+Saved checkpoint.
+--- EPOCH 90/150 ---
+Discriminator loss: 0.49276319567603294
+Generator loss:     3.12576932678319
+Saved checkpoint.
+--- EPOCH 91/150 ---
+Discriminator loss: 0.5091397620812811
+Generator loss:     3.0730818353518092
+Saved checkpoint.
+--- EPOCH 92/150 ---
+Discriminator loss: 0.5222689928581016
+Generator loss:     3.034572078122033
+Saved checkpoint.
+--- EPOCH 93/150 ---
+Discriminator loss: 0.4788884020814992
+Generator loss:     3.258601942447701
+Saved checkpoint.
+--- EPOCH 94/150 ---
+Discriminator loss: 0.46920299831062856
+Generator loss:     3.3395135282266017
+Saved checkpoint.
+--- EPOCH 95/150 ---
+Discriminator loss: 0.4729645743665069
+Generator loss:     3.2734272769003203
+Saved checkpoint.
+--- EPOCH 96/150 ---
+Discriminator loss: 0.5012415917684333
+Generator loss:     3.1591948264777057
+Saved checkpoint.
+--- EPOCH 97/150 ---
+Discriminator loss: 0.4935205594608278
+Generator loss:     3.1838126664209847
+Saved checkpoint.
+--- EPOCH 98/150 ---
+Discriminator loss: 0.5051817322770754
+Generator loss:     3.1770243193164016
+Saved checkpoint.
+--- EPOCH 99/150 ---
+Discriminator loss: 0.5210649588643902
+Generator loss:     3.0411366904624786
+Saved checkpoint.
+--- EPOCH 100/150 ---
+Discriminator loss: 0.5132456778953172
+Generator loss:     3.092163966159628
+Saved checkpoint.
+--- EPOCH 101/150 ---
+Discriminator loss: 0.529242183975499
+Generator loss:     3.0218330862546208
+Saved checkpoint.
+--- EPOCH 102/150 ---
+Discriminator loss: 0.5228896195990871
+Generator loss:     3.021099077330695
+Saved checkpoint.
+--- EPOCH 103/150 ---
+Discriminator loss: 0.5360805943909318
+Generator loss:     3.0146273802025148
+Saved checkpoint.
+--- EPOCH 104/150 ---
+Discriminator loss: 0.5308521116773287
+Generator loss:     3.011264683020235
+Saved checkpoint.
+--- EPOCH 105/150 ---

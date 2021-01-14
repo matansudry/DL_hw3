@@ -36,8 +36,8 @@ def get_metrics(best_eval_score: float, eval_score: float, train_loss: float) ->
 
 def train(dis_model: nn.Module, gen_model: nn.Module, train_loader: DataLoader, train_params: TrainParams, logger: TrainLogger) -> Metrics:
     dsc_avg_losses, gen_avg_losses = [], []
-    dsc_optimizer = torch.optim.Adam(dis_model.parameters(), lr=0.000008)
-    gen_optimizer = torch.optim.Adam(gen_model.parameters(), lr=0.001)
+    dsc_optimizer = torch.optim.Adam(dis_model.parameters(), lr=train_params.lr_des)
+    gen_optimizer = torch.optim.Adam(gen_model.parameters(), lr=train_params.lr_gen)
     for epoch_idx in range(train_params.num_epochs):
         # We'll accumulate batch losses and show an average once per epoch.
         dsc_losses, gen_losses = [], []
@@ -45,7 +45,7 @@ def train(dis_model: nn.Module, gen_model: nn.Module, train_loader: DataLoader, 
 
         #with tqdm.tqdm(total=len(train_loader.batch_sampler), file=sys.stdout) as pbar:
         #for idx, (x_data, _) in tqdm(enumerate(train_loader)):
-        for x_data in tqdm(train_loader):
+        for x_data in train_loader:
             image = x_data[0]
             features = x_data[1]
             if torch.cuda.is_available():
@@ -64,15 +64,15 @@ def train(dis_model: nn.Module, gen_model: nn.Module, train_loader: DataLoader, 
             print(f'Saved checkpoint.')
             
 
-        samples = gen_model.sample(5, with_grad=False)
+        """samples = gen_model.sample(5, with_grad=False)
         fig, _ = plot.tensors_as_images(samples.cpu(), figsize=(6,2))
         IPython.display.display(fig)
         plt.close(fig)
 
     # Show hypers
-    print(hp)
+    print(hp)"""
 
-def discriminator_loss_fn(y_data, y_generated, data_label=0, label_noise=0.0):
+def discriminator_loss_fn(y_data, y_generated, data_label=1, label_noise=0.3):
     """
     Computes the combined loss of the discriminator given real and generated
     data using a binary cross-entropy metric.
@@ -105,7 +105,7 @@ def discriminator_loss_fn(y_data, y_generated, data_label=0, label_noise=0.0):
     loss_generated = loss_func(y_generated, generated_label)
     return loss_data + loss_generated
 
-def generator_loss_fn(y_generated, data_label=0):
+def generator_loss_fn(y_generated, data_label=1):
     """
     Computes the loss of the generator given generated data using a
     binary cross-entropy metric.
@@ -193,13 +193,18 @@ def save_checkpoint(gen_model, dsc_losses, gen_losses, checkpoint_file):
     """
 
     saved = False
-    checkpoint_file = f"{checkpoint_file}.pt"
-    new_arr = []
+    gen_len = len(gen_losses)
+    checkpoint_file = f"output/{checkpoint_file}"+str(gen_len)+".pt"
+    """new_arr = []
     for i in range(len(gen_losses)):
         new_arr.append(1/(abs(dsc_losses[i] - gen_losses[i])*(dsc_losses[i] + gen_losses[i])))
     tmp = max(new_arr)
     predicted_index = new_arr.index(tmp)
     if (predicted_index == len(gen_losses)-11):
         torch.save(gen_model, checkpoint_file)
-        saved = True
+        saved = True"""
+    #min_value = min(gen_losses)
+    #if (min_value == gen_losses[gen_len-1]):
+    torch.save(gen_model, checkpoint_file)
+    saved = True
     return saved
