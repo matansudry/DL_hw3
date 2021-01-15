@@ -7,13 +7,8 @@ from typing import Callable
 from torch.utils.data import DataLoader
 from torch.optim.optimizer import Optimizer
 
-
 class Discriminator(nn.Module):
     def __init__(self, in_size):
-        """
-        :param in_size: The size of on input image (without batch dimension).
-        """
-
         super().__init__()
         self.in_size = in_size
         modules = []
@@ -52,12 +47,6 @@ class Discriminator(nn.Module):
         self.linaer2 = nn.Linear(256, 1)
 
     def forward(self, x):
-        """
-        :param x: Input of shape (N,C,H,W) matching the given in_size.
-        :return: Discriminator class score (not probability) of
-        shape (N,).
-        """
-
         x = self.cnn(x)
         batch_size = x.shape[0]
         x = x.view(batch_size, -1)
@@ -70,13 +59,6 @@ class Discriminator(nn.Module):
 
 class Generator(nn.Module):
     def __init__(self, z_dim, featuremap_size=4, out_channels=3):
-        """
-        :param z_dim: Dimension of latent space.
-        :featuremap_size: Spatial size of first feature map to create
-        (determines output size). For example set to 4 for a 4x4 feature map.
-        :out_channels: Number of channels in the generated image.
-        """
-
         super().__init__()
         self.z_dim = z_dim
 
@@ -84,44 +66,32 @@ class Generator(nn.Module):
 
         self.in_channels = z_dim
 
-        modules.append(nn.ConvTranspose2d(self.in_channels, 1024, kernel_size=4))#, stride=2, padding=1))
+        modules.append(nn.ConvTranspose2d(self.in_channels, 1024, kernel_size=4))
         modules.append(nn.BatchNorm2d(1024))
         modules.append(nn.ReLU())
         # 1024 x 4 x 4
 
-        # modules.append(nn.Dropout(0.2))
-        modules.append(nn.ConvTranspose2d(1024, 512, kernel_size=2, stride=2))#, padding=1))
+        modules.append(nn.ConvTranspose2d(1024, 512, kernel_size=2, stride=2))
         modules.append(nn.BatchNorm2d(512))
         modules.append(nn.ReLU())
         # 512 x 8 x 8
 
-        # modules.append(nn.Dropout(0.2))
-        modules.append(nn.ConvTranspose2d(512, 256, kernel_size=2, stride=2))#, padding=1))
+        modules.append(nn.ConvTranspose2d(512, 256, kernel_size=2, stride=2))
         modules.append(nn.BatchNorm2d(256))
         modules.append(nn.ReLU())
         # 256 x 16 x 16
 
-        modules.append(nn.ConvTranspose2d(256, 128, kernel_size=2, stride=2))#, padding=1))
+        modules.append(nn.ConvTranspose2d(256, 128, kernel_size=2, stride=2))
         modules.append(nn.BatchNorm2d(128))
         modules.append(nn.ReLU())
         # 128 x 32 x 32
 
-        # modules.append(nn.Dropout(0.2))
         modules.append(nn.ConvTranspose2d(128, 3, kernel_size=4, stride=2, padding=1))
         # 3 x 64 x 64
 
         self.cnn = nn.Sequential(*modules)
 
     def sample(self, n, features, with_grad=False):
-        """
-        Samples from the Generator.
-        :param n: Number of instance-space samples to generate.
-        :param with_grad: Whether the returned samples should be part of the
-        generator's computation graph or standalone tensors (i.e. should be
-        be able to backprop into them and compute their gradients).
-        :return: A batch of samples, shape (N,C,H,W).
-        """
-
         device = next(self.parameters()).device
         continuous = self.z_dim - features.shape[1]
         if with_grad:
@@ -136,11 +106,5 @@ class Generator(nn.Module):
         return samples
 
     def forward(self, z):
-        """
-        :param z: A batch of latent space samples of shape (N, latent_dim).
-        :return: A batch of generated images of shape (N,C,H,W) which should be
-        the shape which the Discriminator accepts.
-        """
-
         x = torch.tanh(self.cnn(z.view(z.shape[0], -1, 1, 1)))
         return x

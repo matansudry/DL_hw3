@@ -7,19 +7,11 @@ import numpy
 from tqdm import tqdm
 import pickle
 
-"""transform = transforms.Compose([
-    transforms.Scale(256),
-    transforms.CenterCrop(224),
-    transforms.ToTensor(),
-    transforms.Normalize((0.485, 0.456, 0.406), (0.229, 0.224, 0.225))
-])"""
-
 transform = transforms.Compose([
         transforms.Resize((64, 64)),
         transforms.ToTensor(),
         transforms.Normalize((0.5, 0.5, 0.5), (0.5, 0.5, 0.5)),
 ])
-
 
 def image_preprocessing(images_path, image_size, processed_image_path, img2idx_path):
     num_of_pics = len(os.listdir(images_path))
@@ -42,7 +34,6 @@ def image_preprocessing(images_path, image_size, processed_image_path, img2idx_p
 
     with open(img2idx_path, 'wb') as f:
         pickle.dump(img2idx, f)
-
 
 def image_preprocessing_master():
     image_preprocessing('data/CelebA/img_align_celeba', (64,64), 'data/cache/train.h5', 'data/cache/img2idx_train.pkl')

@@ -1,11 +1,5 @@
-"""
-Main file
-We will run the whole program from here
-"""
-
 import torch
 import hydra
-
 from train import train
 from models.base_model import Discriminator, Generator
 from torch.utils.data import DataLoader
@@ -13,7 +7,6 @@ from utils import main_utils, train_utils
 from utils.train_logger import TrainLogger
 from omegaconf import DictConfig, OmegaConf
 import torchvision.transforms as transforms
-
 import argparse
 import os
 import random
@@ -33,9 +26,7 @@ from IPython.display import HTML
 import torchvision
 from dataset import MyDataset
 
-
 torch.backends.cudnn.benchmark = True
-
 
 @hydra.main(config_path="config", config_name='config')
 def main(cfg: DictConfig) -> None:
@@ -52,9 +43,6 @@ def main(cfg: DictConfig) -> None:
 
     #train_dataset = torchvision.datasets.ImageFolder(cfg['main']['paths']['train'], train_transformation)
     train_dataset = MyDataset(image_path=cfg['main']['paths']['train'], train=True)
-
-    # Use sampler for randomization
-    #training_sampler = torch.utils.data.SubsetRandomSampler(range(len(train_dataset)))
 
     # Prepare Data Loaders for training and validation
     train_loader = torch.utils.data.DataLoader(train_dataset, batch_size=cfg['train']['batch_size'], shuffle=True,
@@ -82,11 +70,7 @@ def main(cfg: DictConfig) -> None:
     train_params = train_utils.get_train_params(cfg)
 
     # Report metrics and hyper parameters to tensorboard
-    metrics = train(dis_model, gen_model, train_loader, train_params, logger)
-    hyper_parameters = main_utils.get_flatten_dict(cfg['train'])
-
-    logger.report_metrics_hyper_params(hyper_parameters, metrics)
-
+    train(dis_model, gen_model, train_loader, train_params, logger)
 
 if __name__ == '__main__':
     main()

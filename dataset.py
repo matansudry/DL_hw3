@@ -1,6 +1,3 @@
-"""
-Here, we create a custom dataset
-"""
 import torch
 import pickle
 import argparse
@@ -52,9 +49,6 @@ class MyDataset(data.Dataset):
         return (image, features) 
 
     def __len__(self) -> int:
-        """
-        :return: the length of the dataset (number of sample).
-        """
         return self.num_of_pics
 
     def loading_images_features(self):
